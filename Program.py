@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
 import math
+import random
 
 DEBUG=True
 
-def show(img,title="image",wait=False):
+def show(img,title="image",wait=True):
     d=max(img.shape[:2])
     if d>1000:
         step=int(math.ceil(d/1000))
@@ -28,33 +29,90 @@ def normalize(img):
     img_copy*=255.9999
     return np.uint8(img_copy)
 
+def showPatch(img,x,y):
+    nimg=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+    nimg[y:y+400,x:x+400,2]=255
+    show(nimg)
+
+def makePatch(img,x,y):
+    patch=1*img[y:y+400,x:x+400]
+    print(np.std(patch))
+    showPatch(img,x,y)
+    patch[:,:]=int(np.average(patch))
+    final=np.sum(patch)
+    original=np.sum(img[y:y+400,x:x+400])
+    cost=2*(original-final)
+    print(cost)
+    print("---")
+
+def flattenArea(img,x,y):
+    nimg=1.0*img
+
+    patch=nimg[y:y+400,x:x+400]
+    patch[:,:]=int(np.average(patch))
+    nimg[y:y+400,x:x+400]=int(np.average(patch))
+    final=np.sum(patch)
+    original=np.sum(img[y:y+400,x:x+400])
+    cost=2*(original-final)
+    dugPixels=original-final
+
+    print(dugPixels)
+
+    cimg=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+    cimg[y:y+400,x:x+400,2]=255
+
+    count=0
+    while count<dugPixels:
+        rx=random.randrange(2,4095)
+        ry=random.randrange(2,4095)
+        randPixel=nimg[ry,rx]
+
+        if (rx>x and x<rx+400) or (ry>y and y<ry+400):
+            pass
+        elif randPixel==nimg[ry,rx-1]==nimg[ry-1,rx]==nimg[ry+1,rx]==nimg[ry,rx+1]:
+            nimg[ry,rx]+=1
+            cimg[ry,rx,1]=255
+            count+=1
+
+    print(np.sum(img)-np.sum(nimg))
+    return cimg
+
+
+
+
+
 img=cv2.imread("input_erosion_safe.png",0)
 
-# patch=img[400:800,1000:1400]
-# print(np.std(patch))
-# patch[:,:]=int(np.average(patch))
+# makePatch(img,2176,2900) # 9.170559336623008 | 180406.0 Accorns
+# makePatch(img,3681,3556) # 3.4071271768713007 | 109432.0 Accorns
+# makePatch(img,2475,441) # 4.04746946366936 | 310482.0 Accorns
 
-candidates=np.empty(0)
-iValues=np.empty(0)
-jValues=np.empty(0)
-print(candidates)
+show(flattenArea(img,3681,3556))
 
-i=2904
-while i<3437-400:
-    j=1639
-    while j<2662-400:
-        nimg=1.0*img
-        patch=nimg[i:i+400,j:j+400]
-        patch[:,:]=int(np.average(patch))
 
-        if np.std(patch)<=1:
-            np.append(candidates,np.std(patch))
-            np.append(iValues,i)
-            np.append(jValues,j)
-        show(nimg)
-        j+=1
-    i+=1
 
-print(candidates)
-print(iValues)
-print(jValues)
+# candidates=np.empty(0)
+# iValues=np.empty(0)
+# jValues=np.empty(0)
+# print(candidates)
+#
+# i=2904
+# while i<3437-400:
+#     j=1639
+#     while j<2662-400:
+#         nimg=1.0*img
+#         patch=nimg[i:i+400,j:j+400]
+#         patch[:,:]=int(np.average(patch))
+#
+#         if np.std(patch)<=1:
+#             np.append(candidates,np.std(patch))
+#             np.append(iValues,i)
+#             np.append(jValues,j)
+#         show(nimg)
+#         j+=1
+#     i+=1
+#
+# print(candidates)
+# print(iValues)
+# print(jValues)
+
