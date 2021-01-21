@@ -3,6 +3,24 @@ import numpy as np
 import math
 import random
 
+# 410 x 410 image to perform calculations. When finding spot, look for plot that is fairly flat. Looking for min and max fairly the same.
+# Down sample.
+# Don't check every spot. Spot check every so often to find areas for further search.
+# 100x100 blocks and kill off places with bad standard deviations
+
+# Fancy Algorithm Cost
+# allow dirt to errode and fall into place until no errosion. Recursion.
+# build a pyramid, randomly extract dirt from board.
+# have an inverse strcuture somewhere else on the board to get dirt as you build pyramid.
+# build in corner so you only have to deal with two sides to prevent erosion.
+
+# down sample image
+# look for roughly good solutions and look at specifics later
+# hill climbing (sledding) - gradient descent
+
+# serielization - turn object into linear bytes that can then be written to file
+
+
 DEBUG=True
 
 def show(img,title="image",wait=True):
@@ -46,7 +64,7 @@ def makePatch(img,x,y):
     print("---")
 
 def flattenArea(img,x,y):
-    nimg=1.0*img
+    nimg=1*img
 
     patch=nimg[y:y+400,x:x+400]
     patch[:,:]=int(np.average(patch))
@@ -54,11 +72,12 @@ def flattenArea(img,x,y):
     final=np.sum(patch)
     original=np.sum(img[y:y+400,x:x+400])
     cost=2*(original-final)
+    print(cost)
     dugPixels=original-final
 
     print(dugPixels)
 
-    cimg=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+    cimg=cv2.cvtColor(nimg,cv2.COLOR_GRAY2BGR)
     cimg[y:y+400,x:x+400,2]=255
 
     count=0
@@ -71,6 +90,7 @@ def flattenArea(img,x,y):
             pass
         elif randPixel==nimg[ry,rx-1]==nimg[ry-1,rx]==nimg[ry+1,rx]==nimg[ry,rx+1]:
             nimg[ry,rx]+=1
+            cimg[ry,rx]+=1
             cimg[ry,rx,1]=255
             count+=1
 
@@ -88,6 +108,8 @@ img=cv2.imread("input_erosion_safe.png",0)
 # makePatch(img,2475,441) # 4.04746946366936 | 310482.0 Accorns
 
 show(flattenArea(img,3681,3556))
+
+cv2.imwrite("out.png",flattenArea(img,3681,3556))
 
 
 
