@@ -20,6 +20,31 @@ import random
 
 # serielization - turn object into linear bytes that can then be written to file
 
+# Rings missing corners. "hey are you within one of the other guys?"
+# Build up from base of pyramid
+# Recursion erosion simulator is the coolest.
+
+# pixels_to_lower=ter>top
+# ter[pixels_to_lower]=top[pixels_to_lower]
+
+# Use DFS for cool recursion erosion simulator
+
+# cost=(originalTer-curTer).abs().sum()
+# ter.sum()==cur.sum()
+
+# 625 acorns per trunk of dirt that is taken off world or transported to the world.
+
+# build plot
+# pick pixel and radiate straight out
+
+'''
+ |||
+  _
+:| |:
+  -
+ |||
+
+'''
 
 DEBUG=True
 

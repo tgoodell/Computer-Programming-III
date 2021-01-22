@@ -1,4 +1,35 @@
+import cv2
 import numpy as np
+import math
+import random
+import sys
+sys.setrecursionlimit(100000)
+
+DEBUG=True
+
+def show(img,title="image",wait=True):
+    d=max(img.shape[:2])
+    if d>1000:
+        step=int(math.ceil(d/1000))
+        img=img[::step,::step]
+    if not DEBUG:
+        return
+    if np.all(0<=img) and np.all(img<256):
+        cv2.imshow(title,np.uint8(img))
+    else:
+        cv2.imshow(title,normalize(img))
+    if wait:
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    else:
+        cv2.waitKey(1)
+
+def normalize(img):
+    img_copy=img*1.0
+    img_copy-=np.min(img_copy)
+    img_copy/=np.max(img_copy)
+    img_copy*=255.9999
+    return np.uint8(img_copy)
 
 # CompSci is all about searching
 # Linear search
@@ -27,3 +58,59 @@ s="""
 #######
 """
 
+#NESW
+explored=set()
+def dfs(img,x,y,depth=100):
+    global explored
+
+    # if x,y have already been checked return false
+    if (x,y) in explored:
+        return False
+    explored.add((x,y))
+    print(x,y)
+    if img[y,x]>0==255:
+        print("Found it at %d,%d!"%(x,y))
+        img[y,x]=128
+        return True
+    found=False
+    if not found and y>0:
+        dfs(img,x,y-1)
+    if not found and x<100-1:
+        dfs(img,x+1,y)
+    if not found and y<100-1:
+        dfs(img,x,y+1)
+    if not found and x>0:
+        dfs(img,x-1,y)
+    return found
+
+def bfs(img,x,y):
+    queue=[(x,y)]
+    while queue:
+        x,y=queue.pop(0)
+        if (x,y) in explored:
+            continuegi
+        if img[y,x]>0==255:
+            print("Found it at %d,%d!"%(x,y))
+            img[y,x]=128
+            return True
+        explored.add((x,y))
+        if y>0:
+            queue.append((x,y+1))
+        if x<100-1:
+            queue.append((x+1,y))
+        if y<100-1:
+            queue.append((x,y+1))
+        if x>0:
+            queue.append((x-1,y))
+
+random.seed(68)
+img=np.zeros((100,100),dtype=np.uint8)
+
+for i in range(10):
+    x=random.randrange(100)
+    y=random.randrange(100)
+    img[x,y]=255
+
+img=cv2.resize(img,(400,400),interpolation=cv2.INTER_NEAREST)
+bfs(img,0,0)
+show(img)
