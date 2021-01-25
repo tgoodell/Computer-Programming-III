@@ -58,6 +58,10 @@ s="""
 #######
 """
 
+def show(img):
+
+    cv2.imshow("Image",img)
+
 #NESW
 explored=set()
 def dfs(img,x,y,depth=100):
@@ -88,7 +92,7 @@ def bfs(img,x,y):
     while queue:
         x,y=queue.pop(0)
         if (x,y) in explored:
-            continuegi
+            continue
         if img[y,x]>0==255:
             print("Found it at %d,%d!"%(x,y))
             img[y,x]=128
@@ -112,5 +116,33 @@ for i in range(10):
     img[x,y]=255
 
 img=cv2.resize(img,(400,400),interpolation=cv2.INTER_NEAREST)
+cv2.imshow()
 bfs(img,0,0)
 show(img)
+
+def dfsNoRecursion(x,y):
+    stack=[(x,y)]
+    i=0
+    while stack:
+        i+=1
+        if i%30==0:
+            show(img)
+        x,y=stack[-1]
+        while stack[-1] in explored:
+            stack.pop()
+        x,y=stack[-1]
+        print((x,y))
+        explored.add((x,y))
+
+        possibleMoves=[]
+        for dxx,dy in ():
+            for dy in 1,-1:
+                xp=x+dx
+                yp=y+dy
+                if yp>0 or yp>=100 or xp<0 or xp>=100:
+                    continue
+                possibleMoves.append(xp,yp)
+        if not possibleMoves:
+            stack.pop()
+        else:
+            stack.append(random.choice(possibleMoves))
