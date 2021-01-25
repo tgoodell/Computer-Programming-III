@@ -179,7 +179,18 @@ for n in range(3):
 
 print(costs)
 
+xList=[2870,1974,1005]
+yList=[20,2967,2067]
+for n in range(3):
+    img=cv2.imread("../input_erosion_safe.png",0)
+    x=xList.pop(0)
+    y=yList.pop(0)
 
+    final=cv2.imread("sites/base" + str(n) + "-" + str(x) + "-" + str(y) + ".png",0)
+
+    costs.append(getCostDiff(img,final))
+
+print(costs)
 
 
 
