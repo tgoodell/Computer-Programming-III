@@ -1,0 +1,23 @@
+,Crime Type,Victim Count,Crime Type.1,Victim Count.1
+0,Advanced Fee,181,Identity Theft,220
+1,BEC/EAC,218,Investment,22
+2,Charity,1,Lottery/Sweepstakes/Inheritance,85
+3,Civil Matter,12,Malware/Scareware/Virus,29
+4,Confidence Fraud/Romance,201,Misrepresentation,50
+5,Corporate Data Breach,8,No Lead Value,174
+6,Credit Card Fraud,568,Non-payment/Non-Delivery,744
+7,Crimes Against Children,19,Other,60
+8,Criminal Forums,0,Overpayment,155
+9,Denial of Service/TDos,12,Personal Data Breach,524
+10,Employment,145,Phishing/Vishing/Smishing/Pharming,191
+11,Extortion,419,Ransomware,12
+12,Gambling,4,Re-shipping,11
+13,Government Impersonation,161,Real Estate/Rental,92
+14,Hacktivist,0,Spoofing,247
+15,Harassment/Threats of Violence,197,Tech Support,172
+16,Health Care Related,3,Terrorism,0
+17,IPR/Copyright and Counterfeit,17,,
+18,,,,
+19,Descriptors*,Descriptors*,Descriptors*,Descriptors*
+20,Social Media,372,Virtual Currency,242
+21,"*These descriptors relate to the medium or tool used to facilitate the crime, and are used by the IC3 for tracking purposes only. They are available only after another crime type has been selected.","*These descriptors relate to the medium or tool used to facilitate the crime, and are used by the IC3 for tracking purposes only. They are available only after another crime type has been selected.","*These descriptors relate to the medium or tool used to facilitate the crime, and are used by the IC3 for tracking purposes only. They are available only after another crime type has been selected.","*These descriptors relate to the medium or tool used to facilitate the crime, and are used by the IC3 for tracking purposes only. They are available only after another crime type has been selected."
