@@ -161,6 +161,7 @@ yList=[20,3505,912]
 
 for n in range(3):
     img=cv2.imread("input_erosion_safe.png",0)
+    show(img,wait=True)
     x=xList.pop(0)
     y=yList.pop(0)
 
