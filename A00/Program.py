@@ -83,7 +83,7 @@ def dirtDriver(img,tx=3681,ty=3556):
                 cimg[ty+n,tx+k,0]=255
             if (((n)*0.0025+(k+1)/160000)*100)%0.01==0:
                 print(str((((n)*0.0025+(k+1)/160000)*100)) + "%")
-            # show(cimg,wait=False)
+            show(cimg,wait=False)
             k+=1
         # print(str((((n)*0.0025/160000)*100)) + "%")
         n+=1
@@ -128,7 +128,7 @@ def takeDirt(img,cimg,needed,x,y):
         elif randPixel==img[ry,rx-1]==img[ry-1,rx]==img[ry+1,rx]==img[ry,rx+1]:
             if count%10000==0:
                 print(str(needed-count))
-            # show(cimg, wait=False)
+            show(cimg, wait=False)
             img[ry,rx]-=1
             cimg[ry,rx]-=1
             cimg[ry,rx,1]=255

@@ -1,5 +1,8 @@
+<<<<<<< HEAD
+=======
 # Time: 25 minutes
 
+>>>>>>> main
 # a.) specify Upper left and Lower Right of Rectangle, give area. Heavy User Interface. Rectangle Area Finder. Input: (3, 4) , (7,8)
     # Correctly Calculate Area
     # Right Format
