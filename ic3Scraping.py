@@ -15,27 +15,18 @@ from bs4 import BeautifulSoup
         # By Subject Loss
         # Age Group Count
         # Age Group Amount Loss
-crimeData=np.zeros((4,57,37,6))
+crimeData=np.zeros((4,57,39,6))
 yearLookup=["2016", "2017", "2018", "2019"]
 categoryLookup=["Victim Count", "Victim Loss", "Subject Count", "Subject Loss", "Age Group Count", "Age Group Amount Loss"]
 ageRangeLookup=["Under 20", "20 - 29", "30 - 39", "40 - 49", "50-59", "Over 60"]
 stateLookup=["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisians", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "United States Minor Outlying Islands", "Utah", "Vermont", "Virgin Islands", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming"]
-crimeLookup=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
+crimeLookup=["Advanced Fee", "Auction", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Malware/Scareware", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Virus", "Social Media", "Virtual Currency"]
 crimeLookup2019=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
+crimeLookup2018=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
+crimeLookup2017=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
+crimeLookup2016=["Overpayment", "Advanced Fee", "Auction", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Tech Support", "Terrorism", "Virus", "Social Media", "Virtual Currency"]
 
-def addData(year,state):
-    data=fetchData(year,state)
-    print(data)
-    n=0
-    while n<len(data)-1:
-        k=0
-        if n<len(data)-12:
-            crimeData[yearLookup.index(year)][stateLookup.index(state)][n%37][n//37]=data[n]
-        else:
-            crimeData[yearLookup.index(year)][stateLookup.index(state)][n%6][4+k//2]=data[n]
-            k+=1
-        # print("Data: " + str(n))
-        n+=1
+# Need to figure out how to retrieve data correctly.
 
 def fetchData(year,state):
     if year not in yearLookup:
@@ -71,19 +62,53 @@ def fetchData(year,state):
 
     return scrape
 
+def addData(year,state):
+    data=fetchData(year,state)
+    print(state)
+    n=0
+    while n<len(data)-1:
+        k=0
+        if n<len(data)-12:
+            if year=="2019":
+                crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crimeLookup2019[n%(len(crimeLookup2019)-1)])][n//(len(crimeLookup2019)-1)]=data[n]
+            elif year=="2018":
+                crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crimeLookup2018[n%(len(crimeLookup2018)-1)])][n//(len(crimeLookup2018)-1)]=data[n]
+            elif year=="2017":
+                crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crimeLookup2017[n%(len(crimeLookup2017)-1)])][n//(len(crimeLookup2017)-1)]=data[n]
+            elif year=="2016":
+                crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crimeLookup2016[n%(len(crimeLookup2016)-1)])][n//(len(crimeLookup2016)-1)]=data[n]
+            else:
+                print("Invalid year to add data. " + str(year) + " is not valid.")
+        else:
+            crimeData[yearLookup.index(year)][stateLookup.index(state)][n%6][4+k//2]=data[n]
+            k+=1
+        # print("Data: " + str(n))
+        n+=1
+
 def getDataPiece(year,state,crime,category):
-    if category in categoryLookup:
+    if category=="Age Group Count" or category=="Age Group Amount Loss":
+        print("Retrieval not supported yet. Cannot produce " + category + ".")
+    elif category in categoryLookup:
         return crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crime)][categoryLookup.index(category)]
+    else:
+        print("Invalid category. " + str(category) + " is not found.")
 
-    elif category in ageRangeLookup:
-        # Needs work
-        return crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crime)][ageRangeLookup.index(category)]
+def getAllStates(year):
+    for state in stateLookup:
+        addData(year,state)
 
-# addData("2019","Arkansas")
+def fetchAllData():
+    for year in yearLookup:
+        getAllStates(year)
+        print(year)
+
+# addData("2019","Alabama")
+# getAllStates("2019")
+# fetchAllData()
 # np.save("crimeData.npy",crimeData)
 #
 crimeData=np.load("crimeData.npy")
-print(getDataPiece("2019", "Arkansas", "Identity Theft", "Under 20"))
+print(getDataPiece("2016", "Arkansas", "Social Media", "Victim Loss"))
 
 
 

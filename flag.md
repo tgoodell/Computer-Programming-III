@@ -1,0 +1,1 @@
+FLAG{No_Autonomous_Death_Drones}
