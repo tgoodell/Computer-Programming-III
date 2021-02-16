@@ -1,11 +1,13 @@
 import requests
-import pandas as pd
 import numpy as np
-import math
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+from matplotlib.colors import ListedColormap
+import seaborn as sns
 from bs4 import BeautifulSoup
 
 # Array Format
-    # Year - 2016,2017,2018,2019
+    # Year - 2016,2017,2018,2019 - No longer a thing
     # State
     # Crime Type
     # Categories
@@ -15,18 +17,23 @@ from bs4 import BeautifulSoup
         # By Subject Loss
         # Age Group Count
         # Age Group Amount Loss
-crimeData=np.zeros((4,57,39,6))
+
 yearLookup=["2016", "2017", "2018", "2019"]
 categoryLookup=["Victim Count", "Victim Loss", "Subject Count", "Subject Loss", "Age Group Count", "Age Group Amount Loss"]
 ageRangeLookup=["Under 20", "20 - 29", "30 - 39", "40 - 49", "50-59", "Over 60"]
-stateLookup=["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisians", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "United States Minor Outlying Islands", "Utah", "Vermont", "Virgin Islands", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming"]
+stateLookup=["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisians", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "US Minor Outlying Islands", "Utah", "Vermont", "Virgin Islands", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming"]
 crimeLookup=["Advanced Fee", "Auction", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Malware/Scareware", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Virus", "Social Media", "Virtual Currency"]
 crimeLookup2019=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
 crimeLookup2018=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
 crimeLookup2017=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
 crimeLookup2016=["Overpayment", "Advanced Fee", "Auction", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Tech Support", "Terrorism", "Virus", "Social Media", "Virtual Currency"]
 
-# Need to figure out how to retrieve data correctly.
+# crimeData2016=np.zeros((len(stateLookup),len(crimeLookup2016),len(categoryLookup)))
+# crimeData2017=np.zeros((len(stateLookup),len(crimeLookup2017),len(categoryLookup)))
+# crimeData2018=np.zeros((len(stateLookup),len(crimeLookup2018),len(categoryLookup)))
+# crimeData2019=np.zeros((len(stateLookup),len(crimeLookup2019),len(categoryLookup)))
+
+crimeData=np.zeros((len(yearLookup)),(len(stateLookup),len(crimeLookup2019),len(categoryLookup)))
 
 def fetchData(year,state):
     if year not in yearLookup:
@@ -70,26 +77,54 @@ def addData(year,state):
         k=0
         if n<len(data)-12:
             if year=="2019":
-                crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crimeLookup2019[n%(len(crimeLookup2019)-1)])][n//(len(crimeLookup2019)-1)]=data[n]
+                crimeData2019[stateLookup.index(state)][n%(len(crimeLookup2019))][n//(len(crimeLookup2019))]=data[n]
             elif year=="2018":
-                crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crimeLookup2018[n%(len(crimeLookup2018)-1)])][n//(len(crimeLookup2018)-1)]=data[n]
+                crimeData2018[stateLookup.index(state)][n%(len(crimeLookup2018))][n//(len(crimeLookup2018))]=data[n]
             elif year=="2017":
-                crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crimeLookup2017[n%(len(crimeLookup2017)-1)])][n//(len(crimeLookup2017)-1)]=data[n]
+                crimeData2017[stateLookup.index(state)][n%(len(crimeLookup2017))][n//37]=data[n]
             elif year=="2016":
-                crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crimeLookup2016[n%(len(crimeLookup2016)-1)])][n//(len(crimeLookup2016)-1)]=data[n]
+                crimeData2016[stateLookup.index(state)][n%(len(crimeLookup2016))][n//(len(crimeLookup2016))]=data[n]
             else:
                 print("Invalid year to add data. " + str(year) + " is not valid.")
         else:
-            crimeData[yearLookup.index(year)][stateLookup.index(state)][n%6][4+k//2]=data[n]
+            # where to add age info
             k+=1
         # print("Data: " + str(n))
         n+=1
+
+def saveAllData():
+    # np.delete(crimeData2016,crimeLookup2016.index("Social Media")+1)
+    # np.delete(crimeData2017,crimeLookup2017.index("Social Media")+1)
+    # np.delete(crimeData2018,crimeLookup2018.index("Social Media")+1)
+    # np.delete(crimeData2019,crimeLookup2019.index("Social Media")+1)
+
+    np.save("crimeData/crimeData2016.npy", crimeData2016)
+    np.save("crimeData/crimeData2017.npy", crimeData2017)
+    np.save("crimeData/crimeData2018.npy", crimeData2018)
+    np.save("crimeData/crimeData2019.npy", crimeData2019)
+    
+def loadAllData():
+    crimeData2016=np.load("crimeData/crimeData2016.npy")
+    crimeData2017=np.load("crimeData/crimeData2017.npy")
+    crimeData2018=np.load("crimeData/crimeData2018.npy")
+    crimeData2019=np.load("crimeData/crimeData2019.npy")
+
+    return crimeData2016,crimeData2017,crimeData2018,crimeData2019
 
 def getDataPiece(year,state,crime,category):
     if category=="Age Group Count" or category=="Age Group Amount Loss":
         print("Retrieval not supported yet. Cannot produce " + category + ".")
     elif category in categoryLookup:
-        return crimeData[yearLookup.index(year)][stateLookup.index(state)][crimeLookup.index(crime)][categoryLookup.index(category)]
+        if year=="2016":
+            return crimeData2016[stateLookup.index(state)][crimeLookup2016.index(crime)][categoryLookup.index(category)]
+        elif year=="2017":
+            return crimeData2017[stateLookup.index(state)][crimeLookup2017.index(crime)][categoryLookup.index(category)]
+        elif year=="2018":
+            return crimeData2018[stateLookup.index(state)][crimeLookup2018.index(crime)][categoryLookup.index(category)]
+        elif year=="2019":
+            return crimeData2019[stateLookup.index(state)][crimeLookup2019.index(crime)][categoryLookup.index(category)]
+        else:
+            print("Invalid year. No data for " + str(year) + ".")
     else:
         print("Invalid category. " + str(category) + " is not found.")
 
@@ -102,14 +137,134 @@ def fetchAllData():
         getAllStates(year)
         print(year)
 
+def printDataForStateAndYear(year,state,category):
+    if category not in categoryLookup:
+        print("Invalid category " + str(category) + ". Cannot printout data for state and year.")
+    else:
+        if year=="2016":
+            for crime in crimeLookup2016:
+                print(str(crime) + " - " + str(getDataPiece(year,state,crime,category)))
+        elif year=="2017":
+            for crime in crimeLookup2017:
+                print(str(crime) + " - " + str(getDataPiece(year,state,crime,category)))
+        elif year=="2018":
+            for crime in crimeLookup2018:
+                print(str(crime) + " - " + str(getDataPiece(year,state,crime,category)))
+        elif year=="2019":
+            for crime in crimeLookup2019:
+                print(str(crime) + " - " + str(getDataPiece(year,state,crime,category)))
+        else:
+            print("Invalid year " + str(year) + ". Cannot printout data for state and year.")
+
 # addData("2019","Alabama")
 # getAllStates("2019")
 # fetchAllData()
 # np.save("crimeData.npy",crimeData)
 #
-crimeData=np.load("crimeData.npy")
-print(getDataPiece("2016", "Arkansas", "Social Media", "Victim Loss"))
+# crimeData=np.load("crimeData.npy")
+# print(getDataPiece("2016", "Arkansas", "Social Media", "Victim Loss"))
 
+# fetchAllData()
+# saveAllData()
+
+crimeData2016,crimeData2017,crimeData2018,crimeData2019=loadAllData()
+# printDataForStateAndYear("2019","Arkansas","Victim Loss")
+
+
+# objects = stateLookup
+# y_pos = np.arange(len(objects))
+performance = []
+#
+# n=0
+# while n<len(stateLookup):
+#    performance.append(crimeData2016[n][0][0])
+#    n+=1
+#
+# x = []
+# values=[]
+# for state in stateLookup:
+#     x.append(2016)
+#     values.append(2)
+# y = performance
+# classes = stateLookup
+#
+# colours = ListedColormap(['r','b','g'])
+# scatter = plt.scatter(x, y,c=values, cmap=colours)
+# plt.legend(handles=scatter.legend_elements()[0], labels=classes)
+
+# x = np.linspace(-1,1,100)
+#
+# fig = plt.figure()
+# ax = fig.add_subplot(1,1,1)
+#
+# #Plot something
+# for state in stateLookup:
+#     ax.plot(2016, performance[stateLookup.index(state)], color='red', ls="-", label=state)
+
+# ax.plot(x,x, color='red', ls="-", label="$P_1(x)$")
+# ax.plot(x,0.5 * (3*x**2-1), color='green', ls="--", label="$P_2(x)$")
+# ax.plot(x,0.5 * (5*x**3-3*x), color='blue', ls=":", label="$P_3(x)$")
+
+# ax.legend()
+# plt.show()
+x=[]
+y=[]
+classes=[]
+colors=[]
+n=0
+while n<len(stateLookup):
+   y.append(crimeData2016[n][0][0])
+   x.append("2016")
+   classes.append(stateLookup[n])
+
+   n+=1
+n=0
+while n<len(stateLookup):
+   y.append(crimeData2017[n][0][0])
+   x.append("2017")
+   classes.append(stateLookup[n])
+
+   n+=1
+n=0
+while n<len(stateLookup):
+   y.append(crimeData2018[n][0][0])
+   x.append("2018")
+   classes.append(stateLookup[n])
+
+   n+=1
+n=0
+while n<len(stateLookup):
+   y.append(crimeData2019[n][0][0])
+   x.append("2019")
+   classes.append(stateLookup[n])
+
+   n+=1
+
+fig, scatter = plt.subplots(figsize = (19,11))
+sns.scatterplot(x=x, y=y, hue=classes,s=20)
+plt.legend(bbox_to_anchor=(1.01, 1),borderaxespad=0,fontsize=7)
+plt.title("Advanced Fee Victim Count")
+plt.xlabel("Year")
+plt.ylabel("Number of Victims")
+plt.savefig("mygraph.png")
+
+def genChartForAllYears(crime):
+    years=[]
+    crimeSnippet=[]
+    classes=[]
+
+    for year in yearLookup:
+        exec("crimeData")
+        for state in stateLookup:
+            y.append(crimeData2016[n][crimeLookup.index(crime)][0])
+            x.append(year)
+            classes.append(state)
+
+# print(crimeData2016)
+
+# printVictimLoss("2016","Arkansas")
+
+# print(fetchData("2017","Arkansas"))
 
 
 # s = str(s).replace("<p>","").replace("</p>","").replace("[","").replace("]","").replace("c","").replace("l","").replace(":","")

@@ -6,6 +6,15 @@
 # Passage Ways green channel>128
 # Walls green channel<128
 
+# Classic Maze
+# Fancy Maze that interests you
+# Colorize different parts of process
+# Step-by-step Animation
+# On stack colored one way, off stack another
+# Lots of info you can embed.
+# Path and not path carved out.
+# Video should look nice.
+
 import cv2
 import numpy as np
 import math
@@ -47,8 +56,11 @@ img[1::2,1::2]=254
 
 show(img)
 
+
+# REcusive backtracking
 stack=[(1,1)]
-img[1,1]=255
+img[1,1]=explored
+count=0
 while stack:
     x,y=stack[-1]
     possibles=[]
@@ -63,6 +75,9 @@ while stack:
         img[(y+yt)//2,(x+xt)//2]=explored
         stack.append((xt,yt))
     else:
-        stack.pop()
+        stack.pop(-1)
+    count+=1
+    cv2.imwrite(f"animations/maze{count:05d}.png", img)
+    print(count)
 
 show(img)
