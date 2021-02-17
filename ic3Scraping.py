@@ -21,19 +21,18 @@ from bs4 import BeautifulSoup
 yearLookup=["2016", "2017", "2018", "2019"]
 categoryLookup=["Victim Count", "Victim Loss", "Subject Count", "Subject Loss", "Age Group Count", "Age Group Amount Loss"]
 ageRangeLookup=["Under 20", "20 - 29", "30 - 39", "40 - 49", "50-59", "Over 60"]
-stateLookup=["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisians", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "US Minor Outlying Islands", "Utah", "Vermont", "Virgin Islands", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming"]
+stateLookup=["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "US Minor Outlying Islands", "Utah", "Vermont", "Virgin Islands", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming"]
+statePopLookup=[4903185,731545,55114,7278717,3017804,39512223,5758736,3565287,973764,705749,21477737,10617423,169721,1415872,1787065,12671821,6732219,3155070,2913314,4467673,4648794,1344212,6045680,6892503,9986857,5639632,2976149,6137428,1068778,1934408,3080156,1359711,8882190,2096829,19453561,10488084,762062,57917,11689100,3956971,4217737,12801989,3193694,1059361,5148714,884659,6829174,28995881,300,3205958,623989,104328,8535519,7614893,1792147,5822434,578759]
 crimeLookup=["Advanced Fee", "Auction", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Malware/Scareware", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Virus", "Social Media", "Virtual Currency"]
 crimeLookup2019=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
 crimeLookup2018=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
 crimeLookup2017=["Advanced Fee", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware/Virus", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Overpayment", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Spoofing", "Tech Support", "Terrorism", "Social Media", "Virtual Currency"]
 crimeLookup2016=["Overpayment", "Advanced Fee", "Auction", "BEC/EAC", "Charity", "Civil Matter", "Confidence Fraud/Romance", "Corporate Data Breach", "Credit Card Fraud", "Crimes Against Children", "Criminal Forums", "Denial of Service/TDos", "Employment", "Extortion", "Gambling", "Government Impersonation", "Hacktivist", "Harassment/Threats of Violence", "Health Care Related", "IPR/Copyright and Counterfeit", "Identity Theft", "Investment", "Lottery/Sweepstakes/Inheritance", "Malware/Scareware", "Misrepresentation", "No Lead Value", "Non-payment/Non-Delivery", "Other", "Personal Data Breach", "Phishing/Vishing/Smishing/Pharming", "Ransomware", "Re-shipping", "Real Estate/Rental", "Tech Support", "Terrorism", "Virus", "Social Media", "Virtual Currency"]
 
-# crimeData2016=np.zeros((len(stateLookup),len(crimeLookup2016),len(categoryLookup)))
-# crimeData2017=np.zeros((len(stateLookup),len(crimeLookup2017),len(categoryLookup)))
-# crimeData2018=np.zeros((len(stateLookup),len(crimeLookup2018),len(categoryLookup)))
-# crimeData2019=np.zeros((len(stateLookup),len(crimeLookup2019),len(categoryLookup)))
-
-crimeData=np.zeros((len(yearLookup)),(len(stateLookup),len(crimeLookup2019),len(categoryLookup)))
+crimeData2016=np.zeros((len(stateLookup),len(crimeLookup2016),len(categoryLookup)))
+crimeData2017=np.zeros((len(stateLookup),len(crimeLookup2017),len(categoryLookup)))
+crimeData2018=np.zeros((len(stateLookup),len(crimeLookup2018),len(categoryLookup)))
+crimeData2019=np.zeros((len(stateLookup),len(crimeLookup2019),len(categoryLookup)))
 
 def fetchData(year,state):
     if year not in yearLookup:
@@ -156,6 +155,60 @@ def printDataForStateAndYear(year,state,category):
         else:
             print("Invalid year " + str(year) + ". Cannot printout data for state and year.")
 
+def genScatterForAllYears(crime,category,filename="graph.png"):
+    years=[]
+    crimeSnippet=[]
+    classes=[]
+
+    if crime not in crimeLookup:
+        print(str(crime) + " is not a valid crime.")
+    if category not in categoryLookup:
+        print(str(category) + " is not a valid category.")
+
+    for year in yearLookup:
+        if year=="2016":
+            for state in stateLookup:
+                crimeSnippet.append(crimeData2016[stateLookup.index(state)][crimeLookup2016.index(crime)][categoryLookup.index(category)])
+                years.append(year)
+                classes.append(state)
+        elif year=="2017":
+            for state in stateLookup:
+                crimeSnippet.append(crimeData2017[stateLookup.index(state)][crimeLookup2017.index(crime)][categoryLookup.index(category)])
+                years.append(year)
+                classes.append(state)
+        elif year=="2018":
+            for state in stateLookup:
+                crimeSnippet.append(crimeData2018[stateLookup.index(state)][crimeLookup2018.index(crime)][categoryLookup.index(category)])
+                years.append(year)
+                classes.append(state)
+        elif year=="2019":
+            for state in stateLookup:
+                crimeSnippet.append(crimeData2019[stateLookup.index(state)][crimeLookup2019.index(crime)][categoryLookup.index(category)])
+                years.append(year)
+                classes.append(state)
+
+    fig, scatter = plt.subplots(figsize = (19,11))
+    sns.scatterplot(x=years, y=crimeSnippet, hue=classes,s=20)
+    plt.legend(bbox_to_anchor=(1.01, 1),borderaxespad=0,fontsize=7)
+    plt.title(str(crime) + " " + str(category) + " for All Years")
+    plt.xlabel("Year")
+    plt.ylabel(category)
+    plt.savefig(filename)
+
+def calculatePerHundredThousand(year,state,crime,category):
+    return getDataPiece(year,state,crime,category)/statePopLookup[stateLookup.index(state)]*100000
+
+# crimeData2016,crimeData2017,crimeData2018,crimeData2019=loadAllData()
+# genChartForAllYears("Identity Theft","Victim Loss")
+
+crimeData2016,crimeData2017,crimeData2018,crimeData2019=loadAllData()
+
+
+
+
+
+
+
 # addData("2019","Alabama")
 # getAllStates("2019")
 # fetchAllData()
@@ -167,13 +220,12 @@ def printDataForStateAndYear(year,state,category):
 # fetchAllData()
 # saveAllData()
 
-crimeData2016,crimeData2017,crimeData2018,crimeData2019=loadAllData()
+
 # printDataForStateAndYear("2019","Arkansas","Victim Loss")
 
 
 # objects = stateLookup
 # y_pos = np.arange(len(objects))
-performance = []
 #
 # n=0
 # while n<len(stateLookup):
@@ -207,58 +259,6 @@ performance = []
 
 # ax.legend()
 # plt.show()
-x=[]
-y=[]
-classes=[]
-colors=[]
-n=0
-while n<len(stateLookup):
-   y.append(crimeData2016[n][0][0])
-   x.append("2016")
-   classes.append(stateLookup[n])
-
-   n+=1
-n=0
-while n<len(stateLookup):
-   y.append(crimeData2017[n][0][0])
-   x.append("2017")
-   classes.append(stateLookup[n])
-
-   n+=1
-n=0
-while n<len(stateLookup):
-   y.append(crimeData2018[n][0][0])
-   x.append("2018")
-   classes.append(stateLookup[n])
-
-   n+=1
-n=0
-while n<len(stateLookup):
-   y.append(crimeData2019[n][0][0])
-   x.append("2019")
-   classes.append(stateLookup[n])
-
-   n+=1
-
-fig, scatter = plt.subplots(figsize = (19,11))
-sns.scatterplot(x=x, y=y, hue=classes,s=20)
-plt.legend(bbox_to_anchor=(1.01, 1),borderaxespad=0,fontsize=7)
-plt.title("Advanced Fee Victim Count")
-plt.xlabel("Year")
-plt.ylabel("Number of Victims")
-plt.savefig("mygraph.png")
-
-def genChartForAllYears(crime):
-    years=[]
-    crimeSnippet=[]
-    classes=[]
-
-    for year in yearLookup:
-        exec("crimeData")
-        for state in stateLookup:
-            y.append(crimeData2016[n][crimeLookup.index(crime)][0])
-            x.append(year)
-            classes.append(state)
 
 # print(crimeData2016)
 
