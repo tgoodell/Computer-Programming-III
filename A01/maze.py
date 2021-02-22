@@ -71,6 +71,12 @@ def sewardMaze(width,height):
         count+=1
         print(count)
 
+# Recursive Backtracking
+# Right/Left hand Maze Following
+# Dead end filling
+# Checkout: flood filling
+
+
 def sidewinder(width,height):
     # 1.) Work through the grid row-wise, starting with the cell at 0,0. Initialize the “run” set to be empty.
     # 2.) Add the current cell to the “run” set.
@@ -92,14 +98,17 @@ def sidewinder(width,height):
     while k<h:
         n=1
         while n<w-1:
-            run.append(n)
+            run.append(n-1)
             if random.randint(0,1)==1 and n<w-2:
                 # cboard[k,n:n+1,2]=255
                 board[k,n+1]=255
             else:
                 first=run[0]
                 last=run[-1]
+
+                # if board[k-2,random.randint(first,last)]==254:
                 board[k-1,random.randint(first,last)]=255
+
                 # cboard=cv2.cvtColor(board,cv2.COLOR_GRAY2BGR)
                 run=[]
             # show(cv2.resize(cboard, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
