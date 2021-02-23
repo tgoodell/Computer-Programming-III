@@ -98,20 +98,27 @@ def sidewinder(width,height):
     while k<h:
         n=1
         while n<w-1:
-            run.append(n-1)
+            run.append(n)
             if random.randint(0,1)==1 and n<w-2:
-                # cboard[k,n:n+1,2]=255
+                cboard[k,n:n+1,2]=255
                 board[k,n+1]=255
+                show(cv2.resize(cboard, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
             else:
                 first=run[0]
                 last=run[-1]
 
                 # if board[k-2,random.randint(first,last)]==254:
-                board[k-1,random.randint(first,last)]=255
+                badRand=True
+                while badRand:
+                    place=random.randint(first,last)
+                    print(place)
+                    if place%2==1:
+                        board[k-1,place]=255
+                        badRand=False
+                show(cv2.resize(cboard, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
 
-                # cboard=cv2.cvtColor(board,cv2.COLOR_GRAY2BGR)
+                cboard=cv2.cvtColor(board,cv2.COLOR_GRAY2BGR)
                 run=[]
-            # show(cv2.resize(cboard, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
             n+=2
         run=[]
         k+=2
@@ -119,6 +126,51 @@ def sidewinder(width,height):
     cv2.imwrite("maze.png",board)
     show(cv2.resize(board, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=True)
 
-        
+def workerRB(board,x,y):
+    # 01234 : NESW
+    badDirection=True
+    while badDirection:
+        direction=random.randint(0,3)
+        if direction==0 and board[y-1,x]==255:
+            pass
+        elif direction==1 and board[y,x+1]==255:
+            pass
+        elif direction==2 and board[y+1,x]==255:
+            pass
+        elif direction==3 and board[y,x-1]==255:
+            pass
+        else:
+            badDirection=False
+
+    if direction==0 and board[y-2,x]==254:
+        board[y-2:y,x]=255
+        workerRB(board,x,y-2)
+    elif direction==1 and board[y,x+2]==254:
+        board[y,x:x+2]=255
+        workerRB(board,x+2,y)
+    elif direction==2 and board[y+2,x]==254:
+        board[y:y+2,x]=255
+        workerRB(board,x,y+2)
+    elif direction==3 and board[y,x-2]==254:
+        board[y,x-2:x]=255
+        workerRB(board,x-2,y)
+    else:
+        return board
+
+def recursiveBacktracking(width,height):
+    # 1.) Choose a starting point in the field.
+    # 2.) Randomly choose a wall at that point and carve a passage through to the adjacent cell, but only if the adjacent cell has not been visited yet. This becomes the new current cell.
+    # 3.) If all adjacent cells have been visited, back up to the last cell that has uncarved walls and repeat.
+    # 4.) The algorithm ends when the process has backed all the way up to the starting point.
+
+    board=genBoard(width,height)
+
+    for x in range(200):
+        workerRB(board,random.randint(2,width//20),random.randint(2,height//20))
+
+        show(cv2.resize(board, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
+
+
+# recursiveBacktracking(1920,1080)
 sidewinder(1920,1080)
 
