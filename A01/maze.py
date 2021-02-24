@@ -102,7 +102,7 @@ def sidewinder(width,height):
             if random.randint(0,1)==1 and n<w-2:
                 cboard[k,n:n+1,2]=255
                 board[k,n+1]=255
-                show(cv2.resize(cboard, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
+                # show(cv2.resize(cboard, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
             else:
                 first=run[0]
                 last=run[-1]
@@ -111,11 +111,10 @@ def sidewinder(width,height):
                 badRand=True
                 while badRand:
                     place=random.randint(first,last)
-                    print(place)
                     if place%2==1:
                         board[k-1,place]=255
                         badRand=False
-                show(cv2.resize(cboard, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
+                # show(cv2.resize(cboard, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
 
                 cboard=cv2.cvtColor(board,cv2.COLOR_GRAY2BGR)
                 run=[]
@@ -124,7 +123,9 @@ def sidewinder(width,height):
         k+=2
 
     cv2.imwrite("maze.png",board)
-    show(cv2.resize(board, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=True)
+    # show(cv2.resize(board, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=True)
+
+    return board
 
 def workerRB(board,x,y):
     # 01234 : NESW
@@ -143,16 +144,16 @@ def workerRB(board,x,y):
             badDirection=False
 
     if direction==0 and board[y-2,x]==254:
-        board[y-2:y,x]=255
+        board[y-2:y,x]!=0
         workerRB(board,x,y-2)
     elif direction==1 and board[y,x+2]==254:
-        board[y,x:x+2]=255
+        board[y,x:x+2]!=0
         workerRB(board,x+2,y)
     elif direction==2 and board[y+2,x]==254:
-        board[y:y+2,x]=255
+        board[y:y+2,x]!=0
         workerRB(board,x,y+2)
     elif direction==3 and board[y,x-2]==254:
-        board[y,x-2:x]=255
+        board[y,x-2:x]!=0
         workerRB(board,x-2,y)
     else:
         return board
@@ -170,7 +171,62 @@ def recursiveBacktracking(width,height):
 
         show(cv2.resize(board, dsize=(20 * width, 20 * height), interpolation=cv2.INTER_AREA), wait=False)
 
+def wallFollower(maze,dir,x,y):
+    #1234
+    maze[1,1]
+    h,w=maze.shape
+
+    # at end
+    if x==w-1 and y==h-1:
+        return maze
+    elif dir==3 and maze[y,x+1]==255:
+        wallFollower(maze,3,x+1,y)
+
+    dir=2
+
+def tremaux(maze,cmaze):
+    # Choose Random Direction
+    # Walk straight until you get to dead end.
+    # Mark Location
+    # Go left, right, or backwards.
+    # If you encounter a deadend again, mark it
+
+    x=1
+    y=1
+
+    h,w=maze.shape
+
+    while x!=w-1 and y!=y-1:
+        dir=random.randint(0,3)
+        # Go North
+        if dir==0 and maze[y-1,x]>253:
+            while maze[y-1,x]>253:
+                y-=1
+                cmaze[y,x,2]=0
+            maze[y-1,x]-=1
+        # Go East
+        elif dir==1 and maze[y,x-1]>253:
+            while maze[y,x+1]>253:
+                x+=1
+                cmaze[y,x,2]=0
+            maze[y,x+1]-=1
+        # Go South
+        elif dir==2 and maze[y+1,x]>253:
+            while maze[y+1,x]>253:
+                y+=1
+                cmaze[y,x,2]=0
+            maze[y+1,x]-=1
+        # Go West
+        elif dir==3 and maze[y,x-1]>253:
+            while maze[y,x-1]>253:
+                x-=1
+                cmaze[y,x,2]=0
+            maze[y,x-1]-=1
+        show(cv2.resize(cmaze, dsize=(20 * 1920, 20 * 1080), interpolation=cv2.INTER_AREA), wait=False)
+
+
 
 # recursiveBacktracking(1920,1080)
-sidewinder(1920,1080)
+maze=sidewinder(1920,1080)
 
+tremaux(maze,(cv2.cvtColor(maze,cv2.COLOR_GRAY2BGR)))
