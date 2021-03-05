@@ -83,7 +83,7 @@ def dirtDriver(img,tx=3681,ty=3556):
                 cimg[ty+n,tx+k,0]=255
             if (((n)*0.0025+(k+1)/160000)*100)%0.01==0:
                 print(str((((n)*0.0025+(k+1)/160000)*100)) + "%")
-            show(cimg,wait=False)
+            # show(cimg,wait=False)
             k+=1
         # print(str((((n)*0.0025/160000)*100)) + "%")
         n+=1
@@ -123,7 +123,13 @@ def takeDirt(img,cimg,needed,x,y):
         ry=random.randrange(2,4095)
         randPixel=img[ry,rx]
 
-        if (rx>x and rx<x+400) and (ry>y and ry<y+400):
+        xList=[2870,3646,1579]
+        yList=[20,3505,912]
+        badSpot=False
+        for x,y in xList,yList:
+            if (rx>x and rx<x+400) and (ry>y and ry<y+400):
+                badSpot=True
+        if badSpot:
             pass
         elif randPixel==img[ry,rx-1]==img[ry-1,rx]==img[ry+1,rx]==img[ry,rx+1] or randPixel==img[ry,rx-1]+1==img[ry-1,rx]+1==img[ry+1,rx]+1==img[ry,rx+1]+1:
             if count%10000==0:
@@ -159,15 +165,15 @@ def getFinalDirtCost(original,final):
 xList=[2870,3646,1579]
 yList=[20,3505,912]
 
+img=cv2.imread("input_erosion_safe.png",0)
 for n in range(3):
-    img=cv2.imread("input_erosion_safe.png",0)
+    # img=cv2.imread("input_erosion_safe.png",0)
     show(img,wait=True)
     x=xList.pop(0)
     y=yList.pop(0)
 
     rawImg,cimg,cost=dirtDriver(img,x,y)
-    cv2.imwrite("raw/site" + str(n) + "-" + str(x) + "-" + str(y) + ".png",rawImg)
-    cv2.imwrite("raw/site" + str(n) + "-" + str(x) + "-" + str(y) + "_color.png",cimg)
+    img=rawImg
 
 # ---
 # Second Step:
@@ -178,17 +184,20 @@ xList=[2870,3646,1579]
 yList=[20,3505,912]
 
 for n in range(3):
-    img=cv2.imread("input_erosion_safe.png",0)
+    # img=cv2.imread("input_erosion_safe.png",0)
     x=xList.pop(0)
     y=yList.pop(0)
 
-    initialRaw=cv2.imread("raw/site" + str(n) + "-" + str(x) + "-" + str(y) + ".png",0)
-    initialColor=cv2.imread("raw/site" + str(n) + "-" + str(x) + "-" + str(y) + "_color.png")
+    # initialRaw=cv2.imread("raw/site" + str(n) + "-" + str(x) + "-" + str(y) + ".png",0)
+    # initialColor=cv2.imread("raw/site" + str(n) + "-" + str(x) + "-" + str(y) + "_color.png")
+
+    initialRaw=img
+    initialColor=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
 
     finalImg,finalColorImg=takeDirt(initialRaw,initialColor,getCostDiff(img,initialRaw),x,y)
 
-    cv2.imwrite("sites/base" + str(n) + "-" + str(x) + "-" + str(y) + ".png",finalImg)
-    cv2.imwrite("sites/base" + str(n) + "-" + str(x) + "-" + str(y) + "_color.png", finalColorImg)
+    cv2.imwrite(str(n) + "-" + str(x) + "-" + str(y) + ".png",finalImg)
+    cv2.imwrite(str(n) + "-" + str(x) + "-" + str(y) + "_color.png", finalColorImg)
 
 # ---
 # Final Step
@@ -206,8 +215,8 @@ for n in range(3):
     x=xList.pop(0)
     y=yList.pop(0)
 
-    initialRaw=cv2.imread("raw/site" + str(n) + "-" + str(x) + "-" + str(y) + ".png",0)
-    final=cv2.imread("sites/base" + str(n) + "-" + str(x) + "-" + str(y) + ".png",0)
+    initialRaw=cv2.imread(str(n) + "-" + str(x) + "-" + str(y) + ".png",0)
+    final=cv2.imread(str(n) + "-" + str(x) + "-" + str(y) + ".png",0)
 
     initialCosts.append(getCostDiff(img,initialRaw))
     dirtDebt.append(getCostDiff(img,final))
