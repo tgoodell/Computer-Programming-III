@@ -1,0 +1,3 @@
+#!/home/tgoodell/Desktop/Computer-Programming-III/venv/bin/python
+from numba.pycc import main
+main()
