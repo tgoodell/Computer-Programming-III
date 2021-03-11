@@ -360,7 +360,7 @@ cv2.imwrite("costmap.png",out)
 
 (y,x)=(912+200,1579+400+1)
 
-path=out*1
+path=out*1.0
 
 count=0
 
