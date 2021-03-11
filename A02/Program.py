@@ -264,13 +264,43 @@ class MinHeap:
 
 fringe = MinHeap()
 
-img = cv2.imread("crop1.png",0)
+img = cv2.imread("three-bases.png",0)
 cimg=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
 h,w=img.shape
-y,x=(10,10)
+y,x=(20,2870+400)
+
+# marble rolling
+# check around base, start at smallest cost, look through each of its neighbors until you reach cost of 0 / hit goal. Prefer lower costs.
+
+xList=[2870,3646,1579]
+yList=[20,3505,912]
+
+firstSiteBorder=[]
+for n in range(402):
+    firstSiteBorder.append((19,2869+n))
+    firstSiteBorder.append((421,2869+n))
+    firstSiteBorder.append((19+n,2869))
+    firstSiteBorder.append((19+n,2871+400))
+    
+secondSiteBorder=[]
+for n in range(402):
+    secondSiteBorder.append((3504,3645+n))
+    secondSiteBorder.append((3906,3645+n))
+    secondSiteBorder.append((3504+n,3645))
+    secondSiteBorder.append((3504+n,3647+400))
+    
+thirdSiteBorder=[]
+for n in range(402):
+    thirdSiteBorder.append((911,1578+n))
+    thirdSiteBorder.append((913+400,1578+n))
+    thirdSiteBorder.append((911+n,1578))
+    thirdSiteBorder.append((911+n,1580+400))
 
 explored = set()
-fringe.add(0, (10,10))
+for point in secondSiteBorder:
+    fringe.add(0,point)
+
+
 costmap = {}
 count=0
 while fringe:
@@ -278,16 +308,16 @@ while fringe:
     costmap[(y,x)] = cost
     explored.add((y,x))
     cimg[y,x,1] = 0
-    if (y,x)==(h-1,w-1):
+    if (y,x) in firstSiteBorder:
         print("Finished")
         break
     else:
-        for dy,dx in (1, 0), (0, 1), (-1, 0), (0, -1):
+        for dy,dx in (1, 0), (0, 1), (-1, 0), (0, -1), (1, 1), (1, -1), (-1, -1), (-1, 1):
             xp = x + dx
             yp = y + dy
 
             # and not ((2870<xp<2870+400 and 20<yp<20+400) or (3646<xp<3646+400 and 3505<yp<3505+400) or (1579<xp<1579+400 and 912<yp<912+400))
-            if w > xp > 0 < yp < h and (yp,xp) not in explored:
+            if w > xp > 0 < yp < h and (yp,xp) not in explored and not ((2870<xp<2870+400 and 20<yp<20+400) or (3646<xp<3646+400 and 3505<yp<3505+400) or (1579<xp<1579+400 and 912<yp<912+400)):
                 # add(cost + 1, (yp, xp))
                 # color=list(cimg[yp,xp])
 
@@ -296,7 +326,7 @@ while fringe:
                 elif np.abs(int(img[y,x])-int(img[yp,xp]))==1:
                     fringe.add(cost + 25, (yp,xp))
 
-    if len(explored) % 2000 == 0:
+    if len(explored) % 4000 == 0:
         # print(count)
         # show(cv2.resize(cimg,(1000,1000)),wait=False)
         show(cimg,wait=False)
@@ -305,12 +335,12 @@ while fringe:
 # show(cv2.resize(cimg,(1000,1000)))
 print("done")
 # print(fringe.heap)
-print(costmap)
-print(costmap[(448, 615)])
+# print(costmap)
+# print(costmap[(448, 615)])
 # show(cimg,wait=True)
 
 out=cimg*0
-out[:,:,0]=255
+out[:,:,:]=(128,128,128)
 
 n=1
 while n<h-1:
@@ -321,9 +351,51 @@ while n<h-1:
             out[n,k,:]=value
         k+=1
     n+=1
-show(out,wait=True)
+# show(out,wait=True)
 cv2.imwrite("costmap.png",out)
 
-print(out[1,1,:])
+
+out=cv2.imread("costmap.png")
+
+(y,x)=(912+200,1579+400+1)
+
+path=out*0
+
+count=0
+
+visited=[]
+
+while x!=2870 and y!=20+200:
+    visited.append((y,x))
+    path[y,x,1]=255
+    north,south,east,west=math.inf,math.inf,math.inf,math.inf
+
+    current=out[y,x,0]
+    north=out[y-1,x,0]
+    south=out[y+1,x,0]
+    east=out[y,x+1,0]
+    west=out[y,x-1,0]
+
+    print(y,x)
+
+    cardinals=np.array([north,south,east,west])
+
+    if north==cardinals.min() and (y-1,x) not in visited:
+        (y,x)=(y-1,x)
+    elif south==cardinals.min() and (y+1,x) not in visited:
+        (y,x)=(y+1,x)
+    elif east==cardinals.min() and (y,x+1) not in visited:
+        (y,x)=(y,x+1)
+    elif west==cardinals.min() and (y,x-1) not in visited:
+        (y,x)=(y,x-1)
+
+    # if count%1==0:
+    #     show(path, wait=False)
+
+    count+=1
+
+show(path,wait=True)
+
+cv2.imwrite("path.png",path)
 
 #Drawing of coordinates
