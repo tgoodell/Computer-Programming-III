@@ -297,7 +297,7 @@ for n in range(402):
     thirdSiteBorder.append((911+n,1580+400))
 
 explored = set()
-for point in secondSiteBorder:
+for point in thirdSiteBorder:
     fringe.add(0,point)
 
 
@@ -325,9 +325,11 @@ while fringe:
                     fringe.add(cost + 1, (yp,xp))
                 elif np.abs(int(img[y,x])-int(img[yp,xp]))==1:
                     fringe.add(cost + 25, (yp,xp))
+                elif np.abs(int(img[y,x])-int(img[yp,xp]))==2:
+                    fringe.add(cost + 100, (yp,xp))
 
-    if len(explored) % 4000 == 0:
-        # print(count)
+    if len(explored) % 10000 == 0:
+        # print(len(explored))
         # show(cv2.resize(cimg,(1000,1000)),wait=False)
         show(cimg,wait=False)
     # if len(lookup)%100:
@@ -354,43 +356,68 @@ while n<h-1:
 # show(out,wait=True)
 cv2.imwrite("costmap.png",out)
 
-
-out=cv2.imread("costmap.png")
+# out=cv2.imread("costmap.png")
 
 (y,x)=(912+200,1579+400+1)
 
-path=out*0
+path=out*1
 
 count=0
 
-visited=[]
+visited=set()
 
 while x!=2870 and y!=20+200:
-    visited.append((y,x))
-    path[y,x,1]=255
-    north,south,east,west=math.inf,math.inf,math.inf,math.inf
+    north,south,east,west,northeast,northwest,southeast,southwest=math.inf,math.inf,math.inf,math.inf,math.inf,math.inf,math.inf,math.inf
 
     current=out[y,x,0]
     north=out[y-1,x,0]
+    northeast=out[y-1,x+1,0]
+    southwest=out[y+1,x-1,0]
     south=out[y+1,x,0]
+    southeast=out[y+1,x-1,0]
+    northwest=out[y-1,x-1,0]
     east=out[y,x+1,0]
     west=out[y,x-1,0]
 
     print(y,x)
 
-    cardinals=np.array([north,south,east,west])
+    cardinals=np.array([north,south,east,west,northeast,southeast,northwest,northeast])
 
     if north==cardinals.min() and (y-1,x) not in visited:
         (y,x)=(y-1,x)
-    elif south==cardinals.min() and (y+1,x) not in visited:
+        visited.add((y,x))
+        out[y,x,:]=(255,0,0)
+    if northeast==cardinals.min() and (y-1,x+1) not in visited:
+        (y,x)=(y-1,x+1)
+        visited.add((y,x))
+        out[y,x,:]=(255,0,0)
+    if northwest==cardinals.min() and (y-1,x-1) not in visited:
+        (y,x)=(y-1,x-1)
+        visited.add((y,x))
+        out[y,x,:]=(255,0,0)
+    if southeast==cardinals.min() and (y+1,x+1) not in visited:
+        (y,x)=(y+1,x+1)
+        visited.add((y,x))
+        out[y,x,:]=(255,0,0)
+    if southwest==cardinals.min() and (y+1,x-1) not in visited:
+        (y,x)=(y+1,x-1)
+        visited.add((y,x))
+        out[y,x,:]=(255,0,0)
+    if south==cardinals.min() and (y+1,x) not in visited:
         (y,x)=(y+1,x)
-    elif east==cardinals.min() and (y,x+1) not in visited:
+        visited.add((y,x))
+        out[y,x,:]=(255,0,0)
+    if east==cardinals.min() and (y,x+1) not in visited:
         (y,x)=(y,x+1)
-    elif west==cardinals.min() and (y,x-1) not in visited:
+        visited.add((y,x))
+        out[y,x,:]=(255,0,0)
+    if west==cardinals.min() and (y,x-1) not in visited:
         (y,x)=(y,x-1)
+        visited.add((y,x))
+        out[y,x,:]=(255,0,0)
 
-    # if count%1==0:
-    #     show(path, wait=False)
+    if count%1==0:
+        show(path, wait=False)
 
     count+=1
 
