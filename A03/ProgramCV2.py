@@ -2,6 +2,12 @@ import turtle
 import heapq
 import math
 
+# Seward Questions:
+# - Animation Tips?
+# - Ways to standardize coordniates so origin is (0,0)?
+# - Would using OpenCV to draw Lines/Paths of circles be better for the animation?
+#   - i.e. Dividing each edge into lots of pixels instead of a straight line for smoother animation. 
+
 maxX=794701
 minX=355115
 maxY=4044411
