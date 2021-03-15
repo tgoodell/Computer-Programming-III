@@ -258,16 +258,73 @@ class MinHeap:
     def __bool__(self):
         return len(self.lookup) > 0
 
-def genVideos():
+def exploreMap(img,cimg,start,goal1,filename,goal2=(-1,-1)):
+    video=cv2.VideoWriter(filename+".avi", cv2.VideoWriter_fourcc(*"MJPG"), 60, (4096, 4096))
+    goal1End=(-1,-1)
+    goal2End=(-1,-1)
+    h, w = img.shape
     fringe = MinHeap()
+    costmap = {}
+    routes = {}
+    explored = set()
+    for point in start:
+        fringe.add(0,point)
 
+    while fringe:
+        cost, (y,x) = fringe.pop()
+        costmap[(y,x)] = cost
+        explored.add((y,x))
+        cimg[y,x,1] = 0
+        cimg[y,x,2] = 0
+        if (y,x) in goal2:
+            goal2End=(y,x)
+        if (y,x) in goal1:
+            goal1End=(y,x)
+            return cimg,routes,goal1End,goal2End
+        else:
+            for dy,dx in (1, 0), (0, 1), (-1, 0), (0, -1):
+                xp = x + dx
+                yp = y + dy
+
+                if w > xp > 0 < yp < h and (yp,xp) not in explored and not ((2870<xp<2870+400 and 20<yp<20+400) or (3646<xp<3646+400 and 3505<yp<3505+400) or (1579<xp<1579+400 and 912<yp<912+400)):
+                    routes[(yp,xp)]=(y,x)
+
+                    if int(img[y,x])-int(img[yp,xp])==0:
+                        fringe.add(cost + 1, (yp,xp))
+                    elif np.abs(int(img[y,x])-int(img[yp,xp]))==1:
+                        fringe.add(cost + 25, (yp,xp))
+                    elif np.abs(int(img[y,x])-int(img[yp,xp]))==2:
+                        fringe.add(cost + 100, (yp,xp))
+
+        if len(explored) % 1000 == 0:
+            print(len(explored)//1000/60)
+            video.write(cimg)
+
+    return -1
+
+def chartPath(img,start,goal,routes,filename):
+    video=cv2.VideoWriter(filename+".avi", cv2.VideoWriter_fourcc(*"MJPG"), 60, (4096, 4096))
+    path = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    y,x=start
+    n = 0
+    with open(filename+".txt", 'w') as f:
+        while (y, x) not in goal:
+            f.write(str((y, x)) + " --> " + str(routes[(y, x)]) + "\n")
+            y, x = routes[(y, x)]
+            # print(y,x)
+            # path[y, x, :] = (85, 95, 254)
+            path=cv2.circle(path, (y,x), 5, (85, 95, 254), -1)
+            video.write(path)
+            print(n//60)
+            show(path,wait=False)
+
+    cv2.imwrite(filename+".png", path)
+
+    show(path, wait=True)
+
+def roadDriver():
     img = cv2.imread("three-bases.png",0)
     cimg=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
-    h,w=img.shape
-    y,x=(20,2870+400)
-
-    # marble rolling
-    # check around base, start at smallest cost, look through each of its neighbors until you reach cost of 0 / hit goal. Prefer lower costs.
 
     xList=[2870,3646,1579]
     yList=[20,3505,912]
@@ -293,120 +350,9 @@ def genVideos():
         thirdSiteBorder.append((912+n,1579))
         thirdSiteBorder.append((912+n,1579+400))
 
-    explored = set()
-    for point in secondSiteBorder:
-        fringe.add(0,point)
-
-    video=cv2.VideoWriter("SecondToThird.avi", cv2.VideoWriter_fourcc(*"MJPG"), 60, (4096, 4096))
-    costmap = {}
-    routes = {}
-    count=0
-    final=(0,0)
-    while fringe:
-        cost, (y,x) = fringe.pop()
-        costmap[(y,x)] = cost
-        explored.add((y,x))
-        cimg[y,x,1] = 0
-        cimg[y,x,2] = 0
-        if (y,x) in thirdSiteBorder:
-            final=(y,x)
-            print("Finished")
-            break
-        else:
-            # ,(1, 1), (1, -1), (-1, -1), (-1, 1):
-            for dy,dx in (1, 0), (0, 1), (-1, 0), (0, -1):
-                xp = x + dx
-                yp = y + dy
-
-                # and not ((2870<xp<2870+400 and 20<yp<20+400) or (3646<xp<3646+400 and 3505<yp<3505+400) or (1579<xp<1579+400 and 912<yp<912+400))
-                if w > xp > 0 < yp < h and (yp,xp) not in explored and not ((2870<xp<2870+400 and 20<yp<20+400) or (3646<xp<3646+400 and 3505<yp<3505+400) or (1579<xp<1579+400 and 912<yp<912+400)):
-                    # add(cost + 1, (yp, xp))
-                    # color=list(cimg[yp,xp])
-
-                    routes[(yp,xp)]=(y,x)
-
-                    if int(img[y,x])-int(img[yp,xp])==0:
-                        fringe.add(cost + 1, (yp,xp))
-                    elif np.abs(int(img[y,x])-int(img[yp,xp]))==1:
-                        fringe.add(cost + 25, (yp,xp))
-                    elif np.abs(int(img[y,x])-int(img[yp,xp]))==2:
-                        fringe.add(cost + 100, (yp,xp))
-
-        if len(explored) % 1000 == 0:
-            print(len(explored)//1000/60)
-            # show(cv2.resize(cimg,(1000,1000)),wait=False)
-            video.write(cimg)
-            # show(cimg,wait=False)
-        # if len(lookup)%100:
-
-    print("done")
-
-    path=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
-    # video=cv2.VideoWriter("thirdToFirstRoute.avi", cv2.VideoWriter_fourcc(*"MJPG"), 60, (4096, 4096))
-    n=0
-    with open('SecondToThirdRoutes.txt', 'w') as f:
-        while (y,x) not in firstSiteBorder:
-            f.write(str((y,x)) + " --> " + str(routes[(y,x)]) + "\n")
-            y,x=routes[(y,x)]
-            # print(y,x)
-            path[y,x,:]=(85,95,254)
-            # video.write(path)
-            # print(n//60)
-            # show(path,wait=False)
-
-    cv2.imwrite("path.png",path)
-
-    show(path,wait=True)
-
-    points12=[]
-    with open('FirstToSecondRoutes.txt') as f:
-        contents = f.readlines()
-        for line in contents:
-            coord,_=line.replace("(","").replace(")","").split(" --> ")
-            y,x=coord.split(", ")
-            points12.append((int(y),int(x)))
-        f.close()
-
-    video=cv2.VideoWriter("firstToSecondRoutePlayback.avi", cv2.VideoWriter_fourcc(*"MJPG"), 60, (4096, 4096))
-    for point in points12:
-        y,x=point
-        cimg[y,x,1]=0
-        video.write(cimg)
-        # show(cimg,wait=False)
-
-    points23=[]
-    with open('SecondToThirdRoutes.txt') as f:
-        contents = f.readlines()
-        for line in contents:
-            coord,_=line.replace("(","").replace(")","").split(" --> ")
-            y,x=coord.split(", ")
-            points23.append((int(y),int(x)))
-        f.close()
-
-    video=cv2.VideoWriter("secondToThirdRoutePlayback.avi", cv2.VideoWriter_fourcc(*"MJPG"), 60, (4096, 4096))
-    for point in points23:
-        y,x=point
-        cimg[y,x,2]=0
-        video.write(cimg)
-        # show(cimg,wait=False)
-
-    points31=[]
-    with open('ThirdToFirstRoutes.txt') as f:
-        contents = f.readlines()
-        for line in contents:
-            coord,_=line.replace("(","").replace(")","").split(" --> ")
-            y,x=coord.split(", ")
-            points31.append((int(y),int(x)))
-        f.close()
-
-    video=cv2.VideoWriter("thirdTofirstRoutePlayback.avi", cv2.VideoWriter_fourcc(*"MJPG"), 60, (4096, 4096))
-    for point in points31:
-        y,x=point
-        cimg[y,x,1]=0
-        video.write(cimg)
-        # show(cimg,wait=False)
-
-    cv2.imwrite("route.png",cimg)
+    cimg,routes,end1,end2=exploreMap(img,cimg,secondSiteBorder,thirdSiteBorder,"chartingThePath",firstSiteBorder)
+    chartPath(img,end1,firstSiteBorder,routes,"second")
+    chartPath(img,end2,firstSiteBorder,routes,"first")
 
 def getCost(filename):
     img=cv2.imread("three-bases.png")
@@ -427,7 +373,7 @@ def getCost(filename):
 
     return cost
 
-genVideos()
-getCost("FirstToSecondRoutes.txt")
-getCost("SecondToThirdRoutes.txt")
-getCost("ThirdToFirstRoutes.txt")
+roadDriver()
+# getCost("FirstToSecondRoutes.txt")
+# getCost("SecondToThirdRoutes.txt")
+# getCost("ThirdToFirstRoutes.txt")

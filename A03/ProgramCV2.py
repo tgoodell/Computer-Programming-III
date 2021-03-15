@@ -75,8 +75,6 @@ def adjustRoads():
     with open("adjustedRoadNetwork.txt","w") as f:
         f.write(text)
 
-adjustRoads()
-
 t=turtle.Turtle()
 screen=turtle.Screen()
 roadNetwork={}
@@ -116,7 +114,10 @@ heuristic=genHeuristic(allPoints,(495022,3817992))
 
 fringe = MinHeap()
 explored=set()
-x,y=(355115,4040572)
+# 36.499363,-94.617611
+# Top Left: 355115,4040572
+#
+x,y=(554326, 3856136)
 fringe.add(0,(x,y))
 
 costmap = {}
@@ -166,9 +167,10 @@ print((x,y))
 
 t.color("red")
 t.width(3)
-x,y=666045,3653235
+# x,y=666045,3653235
+x,y=567817, 3855997
 with open("routes.txt","w") as f:
-    while (x,y)!=(355115,4040572):
+    while (x,y)!=(567484,3855933):
         f.write(str((x,y)) + "-->" + str(routes[(x,y)]) + "\n")
         ix,iy=x,y
         x,y=routes[(x,y)]
@@ -180,6 +182,6 @@ with open("routes.txt","w") as f:
     t.penup()
     t.goto(x, y)
     t.pendown()
-    t.goto((355115,4040572))
+    t.goto((567484,3855933))
 
 screen.getcanvas().postscript(file="route.eps")
