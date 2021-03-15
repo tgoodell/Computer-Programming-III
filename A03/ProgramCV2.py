@@ -1,6 +1,7 @@
 import turtle
 import heapq
 import math
+import pyproj
 
 # Seward Questions:
 # - Animation Tips?
@@ -12,6 +13,9 @@ maxX=794701
 minX=355115
 maxY=4044411
 minY=3652539
+
+start=(554326, 3856136)
+end=(494821, 3819654)
 
 class MinHeap:
     def __init__(self):
@@ -57,35 +61,46 @@ def genHeuristic(points,goal):
     return heuristic
 
 def adjustRoads():
+    wgs84 = pyproj.Proj(projparams='epsg:4326')
+    InputGrid = pyproj.Proj(projparams='epsg:26915')
     text=""
     with open("UpdatedRoads.txt") as f:
         lines = f.readlines()
         for line in lines:
             line = line.replace("=>", "").replace("\n", "").replace("(", "").replace(")", "").split(" ")
             ox, oy = line.pop(0), line.pop(0)
+            ox, oy = pyproj.transform(InputGrid, wgs84, ox, oy)
             line.pop(0)
             coords = []
             newLine="("+str(int(ox)-minX)+" "+str(int(oy)-minX)+") =>"
             for num in line:
                 tx,ty,type=line.pop(0),line.pop(0),line.pop(0)
-                newLine+=" ("+str(int(tx)-minX)+" "+str(int(ty)-minY)+" "+type+")"
+
+                tx,ty=pyproj.transform(InputGrid, wgs84, tx, ty)
+                new=" ("+str(tx)+" "+str(ty)+" "+type+")"
+                print(new)
+                newLine+=new
             newLine+="\n"
             text+=newLine
 
     with open("adjustedRoadNetwork.txt","w") as f:
         f.write(text)
 
+adjustRoads()
+print("next")
+
 t=turtle.Turtle()
 screen=turtle.Screen()
 roadNetwork={}
 allPoints=[]
-screen.tracer(20000)
-screen.setworldcoordinates(354965.71889999975,3652539.9209000003,794703.8134000003,4044411.3215999994)
+screen.tracer(0)
+# screen.setworldcoordinates(354965.71889999975,3652539.9209000003,794703.8134000003,4044411.3215999994)
+screen.setworldcoordinates(36.5,36,-94.03,-94.22)
 t.color("black")
 count=0
 xList=[]
 yList=[]
-with open("UpdatedRoads.txt") as f:
+with open("adjustedRoadNetwork.txt") as f:
     lines=f.readlines()
     for line in lines:
         line=line.replace("=>","").replace("\n","").replace("(","").replace(")","").split(" ")
@@ -117,7 +132,7 @@ explored=set()
 # 36.499363,-94.617611
 # Top Left: 355115,4040572
 #
-x,y=(554326, 3856136)
+x,y=start
 fringe.add(0,(x,y))
 
 costmap = {}
@@ -127,7 +142,7 @@ while fringe:
     cost, (x,y) = fringe.pop()
     costmap[(x,y)] = cost
     explored.add((x,y))
-    if (x,y)==(666045,3653235):
+    if (x,y)==end:
         print("Finished")
         break
     elif (x,y) in roadNetwork:
@@ -167,10 +182,10 @@ print((x,y))
 
 t.color("red")
 t.width(3)
-# x,y=666045,3653235
-x,y=567817, 3855997
+x,y=end
+# x,y=567817, 3855997
 with open("routes.txt","w") as f:
-    while (x,y)!=(567484,3855933):
+    while (x,y)!=start:
         f.write(str((x,y)) + "-->" + str(routes[(x,y)]) + "\n")
         ix,iy=x,y
         x,y=routes[(x,y)]
@@ -182,6 +197,6 @@ with open("routes.txt","w") as f:
     t.penup()
     t.goto(x, y)
     t.pendown()
-    t.goto((567484,3855933))
+    t.goto(start)
 
 screen.getcanvas().postscript(file="route.eps")
