@@ -121,6 +121,22 @@ def missesToString(missList):
         misses+=miss+", "
     return misses[:-2]
 
+def miniMax(guess,depth,maximizingPlayer):
+    if depth==0: # or node is a terminal node then
+        return heuristic
+    if maximizingPlayer:
+        # max stuff
+    elif maximizingPlayer==False :
+        value=10000000
+        guess="a"
+        for letter in alpha:
+            bullseye, wincon, progress = guessLetter(guess, word, progress)
+            temp,_=miniMax(letter,depth-1,True)
+            if temp<value:
+                value=temp
+                guess=letter
+        return value,guess
+
 win=False
 missNum=0
 guess=""
