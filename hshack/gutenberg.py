@@ -1,8 +1,8 @@
 import difflib
 
-with open("64412-0-diff.txt") as f1:
+with open("fresher.txt") as f1:
     f1_text = f1.read()
-with open("64412-0.txt") as f2:
+with open("fresh.txt") as f2:
     f2_text = f2.read()
 
 # Find and print the diff:
