@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6e78c71a-ec75-40e0-9846-a33de3f73be2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/A04/iterativeDeepening.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/A04/hangman.py" beforeDir="false" afterPath="$PROJECT_DIR$/A04/hangman.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hshack/gutenberg.py" beforeDir="false" afterPath="$PROJECT_DIR$/hshack/gutenberg.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,11 +31,11 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/hshack/gutenberg.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/A04/hangman.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager">
-    <configuration name="gutenberg" type="PythonConfigurationType" factoryName="Python" singleton="false" nameIsGenerated="true">
+    <configuration name="hangman" type="PythonConfigurationType" factoryName="Python" singleton="false" nameIsGenerated="true">
       <module name="Computer-Programming-III" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -45,11 +43,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/hshack" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/A04" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hshack/gutenberg.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/A04/hangman.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />

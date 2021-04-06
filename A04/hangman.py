@@ -4,6 +4,97 @@ import random
 # Is it Computer vs Human or Computer vs Computer?
 #
 
+# Return at the terminal node
+# return node.countWords as eval
+
+# need an eval function
+
+# might check out negamax
+
+# node is all information received from the server
+# function play,value minimax(node,ishangman):
+#     if terminalNode:
+#         return eval
+#     if win or lose:
+#         return +/- infinity
+#     if isHangman:
+#         # does not require work on words
+#         call minimax on all ways to comit to guess
+#         valueOfTheBest=value of the move that maximizes the size of the wordgroup/family
+#         return bestPlay,biggestValueOfTheBest
+#
+#         # makes you do work on words
+#         // find count of all possible maskings of remaining words.
+#         // order them
+#         // call minimax on each starting with the biggest (truncate smaller)
+#         // return the best play and value returned by those calls
+#     else:
+#         call minimax with each letter not currently guesses (order by frequency)
+#         return theBestPlay,smallestBestValue
+#
+#     # return play,value
+
+def getWordGroupSize(node,dictionary,guess):
+    newDictionary=[]
+    for word in dictionary:
+        good=True
+        for letter,lettern in zip(word,node):
+            if letter==lettern or lettern=="_" or letter==guess:
+                pass
+            else:
+                good=False
+                break
+        if good:
+            newDictionary.append(word)
+    return newDictionary,len(newDictionary)
+
+def minimax(node,guesses,depth,isHangman):
+    alpha = "abcdefghijklmnopqrstuvxyz"
+    print(depth)
+    if depth==0:
+        newDict,size=getWordGroupSize(node,dictionary,guess)
+        dictionary=newDict
+        return -1,size
+    if "_" not in node:
+        _,size=getWordGroupSize(node,dictionary,guess)
+        return -1,size
+    if isHangman:
+        # does not require work on words
+        bestPlay=""
+        bestPlayValue=0
+        for letter in alpha:
+            if letter not in guesses:
+                play,value=minimax(node,guesses,depth-1,False)
+                bestPlayValue = max(bestPlayValue, value)
+                if bestPlayValue==value:
+                    bestPlay=play
+        # call minimax on all ways to comit to guess
+
+        return bestPlay,bestPlayValue
+
+        # makes you do work on words
+        # // find count of all possible maskings of remaining words.
+        # // order them
+        # // call minimax on each starting with the biggest (truncate smaller)
+        # // return the best play and value returned by those calls
+    else:
+        # call minimax with each letter not currently guesses (order by frequency)
+        # return theBestPlay,smallestBestValue
+
+        bestPlay = ""
+        bestPlayValue = 0
+        for letter in alpha:
+            if letter not in guesses:
+                play, value = minimax(node, guesses, depth-1,False)
+                bestPlayValue = min(bestPlayValue, value)
+                if bestPlayValue == value:
+                    bestPlay = play
+
+        return bestPlay, bestPlayValue
+
+    return play,value
+
+
 def genBoard(missNum):
     if missNum==0:
         board='''
@@ -161,25 +252,25 @@ def getWordGroup(guess,progress,currentDict):
 
     return newDict
 
-def minimax(node, depth, maximizingPlayer, word, progress, referenceDict):
-    alpha=["a","b","c","d","e","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","x","y","z"]
-    if depth==0 or "_" not in node:
-        return 0
-    if maximizingPlayer:
-        value=-10000000
-        for letter in alpha:
-            child=getWordGroup(letter,progress,referenceDict)
-
-            value = max(value, minimax(child,depth-1, False, word, progress, referenceDict))
-        return value
-    else:
-        value=10000000
-        for letter in alpha:
-            value = min(value, minimax(child,depth-1,True), word, progress, referenceDict)
-        return value
+# def minimax(node, depth, maximizingPlayer, word, progress, referenceDict):
+#     alpha=["a","b","c","d","e","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","x","y","z"]
+#     if depth==0 or "_" not in node:
+#         return 0
+#     if maximizingPlayer:
+#         value=-10000000
+#         for letter in alpha:
+#             child=getWordGroup(letter,progress,referenceDict)
+#
+#             value = max(value, minimax(child,depth-1, False, word, progress, referenceDict))
+#         return value
+#     else:
+#         value=10000000
+#         for letter in alpha:
+#             value = min(value, minimax(child,depth-1,True), word, progress, referenceDict)
+#         return value
 
 def genRefDict(dictionary,length):
-    refDict={}
+    refDict=[]
     for word in dictionary:
         if len(word)==length:
             refDict.append(word)
@@ -203,8 +294,12 @@ while missNum<6:
     print(toString(progress))
     print("Last Guess: " + guess)
     print("Misses: " + missesToString(misses))
+    value, bguess = minimax(progress, misses, 5, False)
     print("\n+++++\n")
     # print(miniMax(word,progress,10,True))
+    referenceDict,size=getWordGroupSize(progress,referenceDict)
+    print("Word Group Size: " + str(size))
+    print("Optimal Guess: " + str(bguess))
     guess=input("Your Next Guess: ")
     bullseye, wincon, progress = guessLetter(guess, word, progress)
 
