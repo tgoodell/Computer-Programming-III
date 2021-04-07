@@ -9,6 +9,73 @@ for line in open("dictionary.txt"):
         wordsByLength[len(word)]=[]
     wordsByLength[len(word)].append(word);
 
+def genNewDictionary(dictionary,misses,node,guess=""):
+    newDict=[]
+    for word in dictionary:
+        bad=False
+
+        for miss in misses:
+            miss=miss[0]
+            if miss in word:
+                bad=True
+                break
+        if not bad:
+            for lettern,letter in zip(node,word):
+                if lettern=="_" or letter==lettern or letter==guess:
+                    pass
+                else:
+                    bad=True
+        if not bad:
+            newDict.append(word)
+
+    return newDict,len(newDict)
+
+def maximizer(node,dictionary,misses,hits):
+    alpha={"a","b","c","d","e","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","x","y","z"}
+    # alpha = cutAlpha(dictionary, alpha)
+    # tdictionary=[]
+    if misses:
+        for n in misses:
+            if n in alpha:
+                alpha.remove(n)
+    bestSize=0
+    bestGuess="-1"
+    for letter in alpha:
+        _,newSize=genNewDictionary(dictionary,misses,node,guess=letter)
+        bestSize=max(newSize,bestSize)
+        if bestSize==newSize and letter not in hits:
+            bestGuess=letter
+    return bestGuess
+
+def minimizer(node,dictionary,misses,hits):
+    alpha={"a","b","c","d","e","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","x","y","z"}
+    if misses:
+        for n in misses:
+            if n in alpha:
+                alpha.remove(n)
+    bestSize=100000000
+    bestGuess="-1"
+    for letter in alpha:
+        _,newSize=genNewDictionary(dictionary,misses,node,guess=letter)
+        bestSize=min(newSize,bestSize)
+        if bestSize==newSize and letter not in hits:
+            bestGuess=letter
+    return bestGuess
+
+def minimax(node,depth,maxer,dictionary,misses,hits):
+    if depth==0 or len(dictionary)==1:
+        return 0
+    if maxer:
+        bestGuess=maximizer(node,dictionary,misses,hits)
+        dict,_=genNewDictionary(dictionary,misses,node,guess=bestGuess)
+        minimax(node,depth-1,False,dict,misses,hits)
+
+    else:
+        bestGuess=minimizer(node, dictionary, misses, hits)
+        dict,_=genNewDictionary(dictionary,misses,node,guess=bestGuess)
+        minimax(node,depth-1,True,dict,misses,hits)
+    return bestGuess
+
 def getWordGroup(progress,currentDict):
     newDict={}
     for word in currentDict:
@@ -23,79 +90,36 @@ def getWordGroup(progress,currentDict):
 
     return newDict
 
-
-
-def isMatch(w,word, goodLetters, badLetters):
-    for a,b in zip(w,word):
-        if b=="_" and a not in goodLetters|badLetters:
-            pass
-        elif b!="_" and b==a:
-            pass
+def sepMissHit(node,guesses):
+    hits=[]
+    misses=[]
+    for check in guesses:
+        if check in node:
+            hits.append(check)
         else:
-            return False
-    return True
+            misses.append(check)
 
-def mask(word, guesses):
-    return "".join("_" if letter not in guesses else letter for letter in word)
+    return misses,hits
 
-def bestReturn(word,guesses,guess):
-    goodLetters=set(letter for letter in word if letter!='_')
-    badLetters=set(letter for letter in guesses if letter not in goodLetters)
-    words=[w for w in wordsByLength[len(word)] if isMatch(w,word, goodLetters, badLetters)]
-    # ~ print(words)
-    guesses+=guess
-    counts={}
-    for w in words:
-        q=mask(w,guesses)
-        if q in counts:
-            counts[q]+=1
-        else:
-            counts[q]=0
-    best=0
-    bestWord=word
-    # ~ print(counts)
-    for m in counts:
-        if counts[m]>best or (counts[m]==best and bestWord.count("_")>m.count("_")):
-            best=counts[m]
-            bestWord=m
-    return bestWord,best
-    
-
-def hangman(data):
+def hangman(data,dictionary):
     word,guesses,guess=re.findall(b"(\w+) \[(\w*),(\w*)\]".decode("utf-8"),data.decode("utf-8"))[0]
+    misses,hits=sepMissHit(word,guesses)
+    dict,_=genNewDictionary(dictionary,misses,word,guess=guess)
+    bestGuess=minimax(guess,26,True,dict,misses,hits)
+
+    if bestGuess==guess:
+        return word+" "+guesses
+    
     return bestReturn(word,guesses,guess)[0]
 
 def hangee(data):
     word,guesses=re.findall(b"(\w+) \[(\w*)]".decode("utf-8"),data.decode("utf-8"))[0]
-    best="A"
-    bestMask=word
-    smallest=10**10
-    for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-        if letter not in guesses:
-            currentMask,c=bestReturn(word,guesses,letter)
-            # ~ print(letter,bestMask,c,smallest,currentMask)
-            if c<smallest or (c==smallest and bestMask.count("_")>currentMask.count("_")):
-                best=letter
-                bestMask=currentMask
-                smallest=c
-    # ~ print(smallest)
-    return best
+
+
 # ~ print(hangman(b"TOAD_ [ABCSREILNUOGDT,Y]"))
 # ~ print(hangee(b"TOAD_ [ABCSREILNUOGDT]"))
 
-# def minimax(node, depth, maximizingPlayer):
-#     if depth==0 or node is a terminal node then
-#         return the heuristic value of node
-#     if maximizingPlayer:
-#         value=-10000000
-#         for each child of node do
-#             value := max(value, minimax(child, depth − 1, FALSE))
-#         return value
-#     else:
-#         value=10000000
-#         for each child of node do
-#             value := min(value, minimax(child, depth − 1, TRUE))
-#         return value
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
