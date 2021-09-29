@@ -1,9 +1,11 @@
 import socket, re
+
 HOST = '127.0.0.1'  # The server's hostname or IP address
-PORT = 50000        # The port used by the server
+PORT = 9220  # The port used by the server
 import random
 import math
 import time
+
 
 # def negamax(node,depth,a=-100000,b=100000):
 #     if depth==0:
@@ -25,136 +27,143 @@ import time
 #             break
 #     return bestV,bestPlay
 
-def sepMissHit(node,guesses):
-    hits=[]
-    misses=[]
+def sepMissHit(node, guesses):
+    hits = []
+    misses = []
     for check in guesses:
         if check in node:
             hits.append(check.lower())
         else:
             misses.append(check.lower())
 
-    return misses,hits
+    return misses, hits
 
-def genNewDictionary(dictionary,misses,node,guess=""):
-    newDict=[]
+
+def genNewDictionary(dictionary, misses, node, guess=""):
+    newDict = []
     for word in dictionary:
-        bad=False
+        bad = False
 
         for miss in misses:
-            miss=miss[0]
+            miss = miss[0]
             if miss.upper() in word.upper():
-                bad=True
+                bad = True
                 break
         if not bad:
-            for nodeLetter,letter in zip(node,word):
-                if nodeLetter.upper()!="_" and letter.upper()!=nodeLetter.upper():
-                    bad=True
+            for nodeLetter, letter in zip(node, word):
+                if nodeLetter.upper() != "_" and letter.upper() != nodeLetter.upper():
+                    bad = True
         if not bad:
             newDict.append(word)
 
-    return newDict,len(newDict)
+    return newDict, len(newDict)
 
-def getPlays(node,dictionary,misses,guess=""):
-    newDictionary,_=genNewDictionary(dictionary,misses,node,guess=guess)
-    playDictionary={}
+
+def getPlays(node, dictionary, misses, guess=""):
+    newDictionary, _ = genNewDictionary(dictionary, misses, node, guess=guess)
+    playDictionary = {}
     for word in newDictionary:
-        nodifiedWord=""
-        for letter,nodeLetter in zip(word,node):
-            if letter==nodeLetter:
-                nodifiedWord+=letter
-            elif nodeLetter=="_" and letter==guess:
-                nodifiedWord+=letter
+        nodifiedWord = ""
+        for letter, nodeLetter in zip(word, node):
+            if letter == nodeLetter:
+                nodifiedWord += letter
+            elif nodeLetter == "_" and letter == guess:
+                nodifiedWord += letter
             else:
-                nodifiedWord+="_"
+                nodifiedWord += "_"
         if nodifiedWord not in playDictionary:
-            playDictionary[nodifiedWord]=[word]
+            playDictionary[nodifiedWord] = [word]
         else:
             playDictionary[nodifiedWord].append(word)
 
     return playDictionary
 
-def getMoves(node,misses,plays,maximizer):
+
+def getMoves(node, misses, plays, maximizer):
     # alpha=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","X","Y","Z"]
-    alpha=["E","A","R","I","O","T","U","S","L","C","N","D","P","M","H","G","B","F","Y","W","K","V","X","Z","J","Q"]
-    newAlpha=[]
+    alpha = ["E", "A", "R", "I", "O", "T", "U", "S", "L", "C", "N", "D", "P", "M", "H", "G", "B", "F", "Y", "W", "K",
+             "V", "X", "Z", "J", "Q"]
+    newAlpha = []
     for letter in alpha:
         if letter not in misses and letter not in node:
             newAlpha.append(letter)
 
     if not maximizer:
-        newAlpha=newAlpha[::-1]
+        newAlpha = newAlpha[::-1]
 
-    return newAlpha[:int(math.ceil(len(newAlpha)/2))]
+    return newAlpha[:int(math.ceil(len(newAlpha) / 2))]
 
-def evalChild(child,node,maximizer):
+
+def evalChild(child, node, maximizer):
     if maximizer:
-        bestValue=-10000000
+        bestValue = -10000000
     else:
-        bestValue=10000000
-    bestSubchild=""
+        bestValue = 10000000
+    bestSubchild = ""
     for subchild in child:
-        if subchild!=node and subchild!="":
+        if subchild != node and subchild != "":
             if maximizer:
-                bestValue=max(bestValue,len(child[subchild]))
-                if bestValue==len(child[subchild]):
-                    bestSubchild=subchild
+                bestValue = max(bestValue, len(child[subchild]))
+                if bestValue == len(child[subchild]):
+                    bestSubchild = subchild
             else:
-                bestValue=min(bestValue,len(child[subchild]))
-                if bestValue==len(child[subchild]):
-                    bestSubchild=subchild
+                bestValue = min(bestValue, len(child[subchild]))
+                if bestValue == len(child[subchild]):
+                    bestSubchild = subchild
 
     return bestSubchild
 
-def minimax(node,depth,maximizer,dictionary,misses):
+
+def minimax(node, depth, maximizer, dictionary, misses):
     # print(depth)
-    plays=getPlays(node,dictionary,misses)
-    if depth==0 or "_" not in node:
+    plays = getPlays(node, dictionary, misses)
+    if depth == 0 or "_" not in node:
         if maximizer:
             return len(plays[node]), None, None
         else:
             return len(plays[node]), None, None
     if maximizer:
-        bestValue=-1000000
-        bestSubChild=""
-        bestMove=""
-        possibleMoves=getMoves(node,misses,plays,maximizer)
+        bestValue = -1000000
+        bestSubChild = ""
+        bestMove = ""
+        possibleMoves = getMoves(node, misses, plays, maximizer)
         for move in possibleMoves:
-            child=getPlays(node,dictionary,misses,guess=move)
-            optimalSubChild=evalChild(child,node,maximizer)
+            child = getPlays(node, dictionary, misses, guess=move)
+            optimalSubChild = evalChild(child, node, maximizer)
             if move not in optimalSubChild:
-                misses+=move
-            if optimalSubChild!="":
-                value,_,_=minimax(optimalSubChild,depth-1,False,dictionary,misses)
-                bestValue=max(value,bestValue)
-                if bestValue==value:
+                misses += move
+            if optimalSubChild != "":
+                value, _, _ = minimax(optimalSubChild, depth - 1, False, dictionary, misses)
+                bestValue = max(value, bestValue)
+                if bestValue == value:
                     # print(move)
-                    bestSubChild=optimalSubChild
-                    bestMove=move
+                    bestSubChild = optimalSubChild
+                    bestMove = move
 
         # print(bestMove)
-    
+
     else:
-        bestValue=1000000
-        bestSubChild=""
-        bestMove=""
-        possibleMoves=getMoves(node,misses,plays,maximizer)
+        bestValue = 1000000
+        bestSubChild = ""
+        bestMove = ""
+        possibleMoves = getMoves(node, misses, plays, maximizer)
         for move in possibleMoves:
-            child=getPlays(node,dictionary,misses,guess=move)
-            optimalSubChild=evalChild(child,node,maximizer)
+            child = getPlays(node, dictionary, misses, guess=move)
+            optimalSubChild = evalChild(child, node, maximizer)
             if move not in optimalSubChild:
-                misses+=move
-            if optimalSubChild!="":
-                value,_,_=minimax(optimalSubChild,depth-1,True,dictionary,misses)
-                bestValue=min(value,bestValue)
-                if bestValue==value:
+                misses += move
+            if optimalSubChild != "":
+                value, _, _ = minimax(optimalSubChild, depth - 1, True, dictionary, misses)
+                bestValue = min(value, bestValue)
+                if bestValue == value:
                     # print(move)
-                    bestSubChild=optimalSubChild
-                    bestMove=move
+                    bestSubChild = optimalSubChild
+                    bestMove = move
 
         # print(bestMove)
 
-    return bestValue,bestMove,bestSubChild
+    return bestValue, bestMove, bestSubChild
+
 
 # def negamax(node,depth,dictionary,misses,hangman,a=-100000,b=100000):
 #     plays = getPlays(node, dictionary, misses)
@@ -185,55 +194,55 @@ def hangman(data, sourceDict, currentWord):
     node, guesses, guess = re.findall(b"(\w+) \[(\w*),(\w*)\]".decode("utf-8"), data.decode("utf-8"))[0]
     misses, hits = sepMissHit(node, guesses)
 
-    dictionary,size=genNewDictionary(sourceDict[len(node)],guesses,node)
+    dictionary, size = genNewDictionary(sourceDict[len(node)], guesses, node)
     print(len(dictionary))
 
-    if len(misses)>8:
+    if len(misses) > 8:
         return "Hangee Lost."
     if "_" not in node:
         return "Hangman Lost."
 
-    bestV,bestPlay,bestNode=minimax(node,7,False,dictionary,guesses)
+    bestV, bestPlay, bestNode = minimax(node, 7, False, dictionary, guesses)
 
-    if guess==bestPlay:
+    if guess == bestPlay:
         return bestNode
     else:
         return node
+
 
 def hangee(data, sourceDict):
     node, guesses = re.findall(b"(\w+) \[(\w*)]".decode("utf-8"), data.decode("utf-8"))[0]
     misses, hits = sepMissHit(node, guesses)
 
-    dictionary,size=genNewDictionary(sourceDict[len(node)],guesses,node)
+    dictionary, size = genNewDictionary(sourceDict[len(node)], guesses, node)
     print(len(dictionary))
 
-    bestV,bestPlay,bestNode=minimax(node,7,True,dictionary,misses)
+    bestV, bestPlay, bestNode = minimax(node, 7, True, dictionary, misses)
 
     print(bestPlay)
 
     return bestPlay
 
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
 
-firstTime=True
-currentWord=""
+firstTime = True
+currentWord = ""
 
-sourceDict={}
+sourceDict = {}
 for line in open("Collins Scrabble Words (2019).txt"):
-    word=line.strip()
+    word = line.strip()
     if len(word) not in sourceDict:
-        sourceDict[len(word)]=[]
-    sourceDict[len(word)].append(word);
+        sourceDict[len(word)] = []
+    sourceDict[len(word)].append(word)
 
 while True:
     data = s.recv(1024)
-    if(b"," in data):
-        x=hangman(data,sourceDict,currentWord)
+    if (b"," in data):
+        x = hangman(data, sourceDict, currentWord)
     else:
-        x=hangee(data,sourceDict)
+        x = hangee(data, sourceDict)
     # ~ print(data)
     print(x)
     s.sendall(x.encode())
-
-

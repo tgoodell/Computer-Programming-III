@@ -5,6 +5,19 @@ David Clark
 Joshua Stallings
 '''
 
+def intToString(x,base):
+    letterSet="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    out=""
+    while x:
+        out=letterSet[x%base]+out
+        x//=base
+    if not out:
+        return 0
+    return out
+
+# word equations
+# BOOK + READ = BLAM
+
 import math
 
 validMoves=["1","2","3","4"]
